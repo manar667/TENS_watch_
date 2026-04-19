@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SWAT</string>
+    <string name="title_activity_main">SWAT</string>
+    <string name="package_name">com.swap.myapp</string>
+    <string name="custom_url_scheme">com.swap.myapp</string>
+</resources>

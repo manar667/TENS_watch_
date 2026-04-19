@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SWAT</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-fullscreen">
+    
+    <div class="status-bar-top">
+        <span class="time" id="liveTime">9:41</span>
+        <span class="app-title">SWAT</span>
+        <span class="battery">92%</span>
+    </div>
+
+    <div class="bluetooth-status" id="bluetoothStatus">
+        <div class="bt-indicator">
+            <span class="bt-icon">📶</span>
+            <span class="bt-text" id="btText">SWAT Watch</span>
+            <span class="bt-dot" id="btDot"></span>
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <!-- 1. Home Page -->
+        <div class="page active" id="homePage">
+            <div class="greeting-section">
+                <h1>Hello, <span>Martin</span></h1>
+                <p class="date" id="todayDate">Thursday, April 23</p>
+            </div>
+
+            <div class="pain-summary-card">
+                <div class="pain-header">
+                    <span>Pain Overview</span>
+                    <span class="info-icon">ⓘ</span>
+                </div>
+                <div class="pain-stats">
+                    <div class="pain-stat">
+                        <span class="pain-label">Before Therapy</span>
+                        <span class="pain-value">7.2</span>
+                        <span class="pain-unit">/10</span>
+                    </div>
+                    <div class="pain-stat">
+                        <span class="pain-label">After Therapy</span>
+                        <span class="pain-value">3.1</span>
+                        <span class="pain-unit">/10</span>
+                    </div>
+                    <div class="pain-stat">
+                        <span class="pain-label">Reduction</span>
+                        <span class="pain-value success">-58%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <button class="quick-btn primary" id="quickStartBtn">Quick Start</button>
+                <button class="quick-btn" id="customSessionBtn">Custom Session</button>
+            </div>
+
+            <div class="recent-sessions-preview">
+                <div class="section-header">
+                    <h3>Recent Sessions</h3>
+                    <span class="view-all" id="viewAllHistory">View All →</span>
+                </div>
+                <div class="mini-session-list" id="miniHistoryList">
+                    <div class="mini-session"><span>Today • 9:30 AM</span><span>8.2mA • 52Hz • 30min</span></div>
+                    <div class="mini-session"><span>Yesterday • 8:15 PM</span><span>7.8mA • 48Hz • 25min</span></div>
+                    <div class="mini-session"><span>Apr 21 • 10:00 AM</span><span>7.5mA • 50Hz • 30min</span></div>
+                </div>
+            </div>
+
+            <div class="next-session-card">
+                <h4>Next Recommended</h4>
+                <p>Based on your pattern, schedule a session now</p>
+                <button class="schedule-btn" id="scheduleNowBtn">Start Now</button>
+            </div>
+        </div>
+
+        <!-- 2. Settings Page -->
+        <div class="page" id="settingsPage">
+            <div class="page-header">
+                <button class="back-btn" data-back="home">←</button>
+                <h2>Session Settings</h2>
+                <div></div>
+            </div>
+            <div class="settings-content">
+                <div class="setting-card">
+                    <label class="setting-label">Frequency</label>
+                    <div class="setting-control">
+                        <span class="setting-value" id="settingFreqValue">50 Hz</span>
+                        <input type="range" id="settingFreqSlider" min="10" max="120" value="50" step="1">
+                        <div class="range-labels"><span>10 Hz</span><span>120 Hz</span></div>
+                    </div>
+                    <p class="setting-hint">40-60 Hz recommended for phantom pain</p>
+                </div>
+                <div class="setting-card">
+                    <label class="setting-label">Mode</label>
+                    <div class="mode-options">
+                        <div class="mode-option active" data-mode="pulse"><span class="mode-name">Pulse</span><span class="mode-desc">Rhythmic stimulation</span></div>
+                        <div class="mode-option" data-mode="continuous"><span class="mode-name">Continuous</span><span class="mode-desc">Steady signal</span></div>
+                        <div class="mode-option" data-mode="burst"><span class="mode-name">Burst</span><span class="mode-desc">Strong short bursts</span></div>
+                    </div>
+                </div>
+                <div class="setting-card">
+                    <label class="setting-label">Duration</label>
+                    <div class="duration-options">
+                        <div class="duration-option" data-time="15">15 min</div>
+                        <div class="duration-option active" data-time="30">30 min</div>
+                        <div class="duration-option" data-time="45">45 min</div>
+                        <div class="duration-option" data-time="60">60 min</div>
+                    </div>
+                </div>
+                <div class="setting-card">
+                    <label class="setting-label">Intensity Start</label>
+                    <p class="setting-note">Intensity starts at 0.0 mA for safety.</p>
+                </div>
+                <button class="start-session-btn" id="startConfiguredSessionBtn">Start Session</button>
+            </div>
+        </div>
+
+        <!-- 3. Active Session Page -->
+        <div class="page" id="activePage">
+            <div class="active-session-full">
+                <div class="active-header">
+                    <span class="session-badge">SESSION ACTIVE</span>
+                    <span class="active-timer" id="activeTimerDisplay">30:00</span>
+                </div>
+                <div class="intensity-main">
+                    <span class="intensity-label">INTENSITY</span>
+                    <div class="intensity-big"><span id="activeIntensityDisplay">0.0</span><span class="unit">mA</span></div>
+                </div>
+                <div class="waveform-large">
+                    <canvas id="activeWaveCanvas" width="350" height="80"></canvas>
+                </div>
+                <div class="active-params">
+                    <div class="active-param"><span class="param-label">Frequency</span><span class="param-value" id="activeFreqDisplay">50 Hz</span></div>
+                    <div class="active-param"><span class="param-label">Mode</span><span class="param-value" id="activeModeDisplay">Pulse</span></div>
+                </div>
+                <div class="intensity-control-large">
+                    <span class="slider-label">Slide to adjust intensity</span>
+                    <input type="range" id="activeIntensitySlider" min="0" max="20" value="0" step="0.5">
+                    <span class="current-ma" id="activeSliderValue">0.0 mA</span>
+                </div>
+                <button class="stop-session-btn" id="activeStopBtn">STOP SESSION</button>
+                <p class="safety-note">Triple tap anywhere to emergency stop</p>
+            </div>
+        </div>
+
+        <!-- 4. History Page -->
+        <div class="page" id="historyPage">
+            <div class="page-header">
+                <button class="back-btn" data-back="home">←</button>
+                <h2>History</h2>
+                <div></div>
+            </div>
+            <div class="history-stats">
+                <div class="history-stat"><span class="stat-number">8</span><span class="stat-label">Total Sessions</span></div>
+                <div class="history-stat"><span class="stat-number">3.5</span><span class="stat-label">Hours</span></div>
+                <div class="history-stat"><span class="stat-number">-58%</span><span class="stat-label">Pain Reduction</span></div>
+            </div>
+            <div class="calendar-strip"><span>April 2026</span><span class="session-count">2/day avg</span></div>
+            <div class="full-history-list" id="fullHistoryList">
+                <div class="history-date-group">
+                    <div class="date-header">Today • April 22</div>
+                    <div class="history-item"><div class="history-time">9:30 AM</div><div class="history-details"><span>8.2 mA • 52 Hz • Pulse</span><span class="duration-badge">30 min</span></div></div>
+                    <div class="history-item"><div class="history-time">8:15 PM</div><div class="history-details"><span>7.8 mA • 48 Hz • Pulse</span><span class="duration-badge">25 min</span></div></div>
+                </div>
+                <div class="history-date-group">
+                    <div class="date-header">April 21</div>
+                    <div class="history-item"><div class="history-time">10:00 AM</div><div class="history-details"><span>7.5 mA • 50 Hz • Continuous</span><span class="duration-badge">30 min</span></div></div>
+                    <div class="history-item"><div class="history-time">9:00 PM</div><div class="history-details"><span>7.2 mA • 46 Hz • Pulse</span><span class="duration-badge">20 min</span></div></div>
+                </div>
+                <div class="history-date-group">
+                    <div class="date-header">April 20</div>
+                    <div class="history-item"><div class="history-time">8:00 AM</div><div class="history-details"><span>6.8 mA • 48 Hz • Burst</span><span class="duration-badge">15 min</span></div></div>
+                    <div class="history-item"><div class="history-time">8:30 PM</div><div class="history-details"><span>7.0 mA • 50 Hz • Pulse</span><span class="duration-badge">30 min</span></div></div>
+                </div>
+                <div class="history-date-group">
+                    <div class="date-header">April 19</div>
+                    <div class="history-item"><div class="history-time">9:00 AM</div><div class="history-details"><span>6.5 mA • 45 Hz • Pulse</span><span class="duration-badge">25 min</span></div></div>
+                    <div class="history-item"><div class="history-time">7:30 PM</div><div class="history-details"><span>6.2 mA • 42 Hz • Continuous</span><span class="duration-badge">20 min</span></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Profile Page -->
+        <div class="page" id="profilePage">
+            <div class="page-header">
+                <button class="back-btn" data-back="home">←</button>
+                <h2>Profile</h2>
+                <button class="edit-btn">Edit</button>
+            </div>
+            <div class="profile-header">
+                <div class="profile-avatar">MS</div>
+                <h3>Martin Shah</h3>
+                <span class="member-badge">Member since March 2026</span>
+              <div class="doctor-info">
+    <span class="doctor-label">Treating Physician</span>
+    <span class="doctor-name">Dr. Manar Mahmoud</span>
+</div>
+            </div>
+            <div class="profile-section-card">
+                <h4>Personal Information</h4>
+                <div class="profile-field"><span class="field-label">Full Name</span><span class="field-value">Martin Shah</span></div>
+                <div class="profile-field"><span class="field-label">Age</span><span class="field-value">42 years</span></div>
+                <div class="profile-field"><span class="field-label">Gender</span><span class="field-value">Male</span></div>
+            </div>
+            <div class="profile-section-card">
+                <h4>Medical Information</h4>
+                <div class="profile-field"><span class="field-label">Condition</span><span class="field-value">Phantom Limb Pain</span></div>
+                <div class="profile-field"><span class="field-label">Affected Limb</span><span class="field-value">Left Arm (Above Elbow)</span></div>
+                <div class="profile-field"><span class="field-label">Amputation Date</span><span class="field-value">March 15, 2026</span></div>
+                <div class="profile-field"><span class="field-label">Pain Type</span><span class="field-value">Burning, Shooting</span></div>
+            </div>
+            <div class="profile-section-card">
+                <h4>Therapy Preferences</h4>
+                <div class="profile-field"><span class="field-label">Preferred Frequency</span><span class="field-value">50 Hz</span></div>
+                <div class="profile-field"><span class="field-label">Preferred Mode</span><span class="field-value">Pulse</span></div>
+                <div class="profile-field"><span class="field-label">Typical Duration</span><span class="field-value">30 minutes</span></div>
+                <div class="profile-field"><span class="field-label">Comfortable Intensity</span><span class="field-value">6.0 - 9.0 mA</span></div>
+            </div>
+        </div>
+
+        <!-- 6. Progress Page -->
+        <div class="page" id="progressPage">
+            <div class="page-header">
+                <button class="back-btn" data-back="home">←</button>
+                <h2>Progress</h2>
+                <div></div>
+            </div>
+            <div class="progress-content">
+                <div class="chart-card">
+                    <h4>Pain Level Trend</h4>
+                    <div class="chart-container"><canvas id="painChart" width="350" height="180"></canvas></div>
+                    <div class="chart-legend"><span><span class="legend-dot blue"></span>Before</span><span><span class="legend-dot green"></span>After</span></div>
+                </div>
+                <div class="chart-card">
+                    <h4>Intensity Progression</h4>
+                    <div class="chart-container"><canvas id="intensityChart" width="350" height="180"></canvas></div>
+                </div>
+                <div class="stats-summary">
+                    <div class="summary-item"><span class="summary-label">Average Intensity</span><span class="summary-value" id="avgIntensity">7.2 mA</span></div>
+                    <div class="summary-item"><span class="summary-label">Most Used Mode</span><span class="summary-value" id="mostUsedMode">Pulse</span></div>
+                    <div class="summary-item"><span class="summary-label">Best Pain Reduction</span><span class="summary-value success" id="bestReduction">-58%</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-tabs">
+        <div class="tab active" data-page="home"><span class="tab-icon">⌂</span><span class="tab-label">Home</span></div>
+        <div class="tab" data-page="active" id="sessionTab" style="display: none;"><span class="tab-icon">▶</span><span class="tab-label">Session</span></div>
+        <div class="tab" data-page="history"><span class="tab-icon">📋</span><span class="tab-label">History</span></div>
+        <div class="tab" data-page="progress"><span class="tab-icon">📊</span><span class="tab-label">Progress</span></div>
+        <div class="tab" data-page="profile"><span class="tab-icon">👤</span><span class="tab-label">Profile</span></div>
+    </div>
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>
